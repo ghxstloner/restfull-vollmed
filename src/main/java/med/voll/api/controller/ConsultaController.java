@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import med.voll.api.dto.consultas.DatosAgendarConsulta;
 import med.voll.api.dto.consultas.DatosDetalleConsulta;
+import med.voll.api.models.consulta.AgendaConsultaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +17,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @RequestMapping("/consultas")
 public class ConsultaController {
+    @Autowired
+    private AgendaConsultaService service;
+
     @PostMapping
     @Transactional
     public ResponseEntity agendar(@RequestBody @Valid DatosAgendarConsulta datos){
-        System.out.println(datos);
+        service.agendar(datos);
+
         return ResponseEntity.ok(new DatosDetalleConsulta(datos.id(), datos.idPaciente(), datos.idMedico(), datos.fecha()));
     }
 }
