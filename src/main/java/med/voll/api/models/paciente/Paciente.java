@@ -9,7 +9,7 @@ import med.voll.api.dto.paciente.DatosRegistrarPaciente;
 import med.voll.api.models.direccion.Direccion;
 
 @Table(name = "pacientes")
-@Entity(name = "paciente")
+@Entity(name = "Paciente")
 @Getter @Setter @NoArgsConstructor @EqualsAndHashCode(of = "id")
 public class Paciente {
     @Id
@@ -19,6 +19,8 @@ public class Paciente {
     private String email;
     private String documento;
     private String telefono;
+    private boolean activo;
+
     @Embedded
     private Direccion direccion;
     public Paciente(DatosRegistrarPaciente datosRegistrarPaciente){
@@ -29,5 +31,7 @@ public class Paciente {
         this.direccion = new Direccion(datosRegistrarPaciente.direccion());
     }
 
-
+    public void desactivarPaciente() {
+        this.activo = false;
+    }
 }

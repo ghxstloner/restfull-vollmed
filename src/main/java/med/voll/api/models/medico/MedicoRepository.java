@@ -25,5 +25,6 @@ public interface MedicoRepository extends JpaRepository<Medico,Long> {
     """)
     Medico selecionarMedicoConEspecialidadMasFecha(Especialidad especialidad, LocalDateTime fecha);
 
-
+    @Query("select m.activo from Medico m where m.id = :idMedico")
+    Boolean findActivoById(Long idMedico);
 }
