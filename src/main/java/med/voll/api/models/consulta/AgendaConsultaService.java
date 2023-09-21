@@ -1,8 +1,10 @@
 package med.voll.api.models.consulta;
 
 import med.voll.api.dto.consultas.DatosAgendarConsulta;
+import med.voll.api.dto.consultas.DatosCancelamientoConsulta;
 import med.voll.api.dto.consultas.DatosDetalleConsulta;
 import med.voll.api.infra.exceptions.ValidacionDeIntegridad;
+import med.voll.api.models.consulta.cancelamiento.ValidadorCancelamientoDeConsulta;
 import med.voll.api.models.consulta.validaciones.ValidadorDeConsultas;
 import med.voll.api.models.medico.Medico;
 import med.voll.api.models.medico.MedicoRepository;
@@ -26,6 +28,9 @@ public class AgendaConsultaService {
     @Autowired
     private List<ValidadorDeConsultas> validadores;
 
+    @Autowired
+    private List<ValidadorCancelamientoDeConsulta> validadoresCancelamiento;
+
     public DatosDetalleConsulta agendar(DatosAgendarConsulta datos){
 
         if(!pacienteRepository.findById(datos.idPaciente()).isPresent()){
@@ -44,7 +49,7 @@ public class AgendaConsultaService {
             throw new ValidacionDeIntegridad("No existen medicos disponibles para este horario");
         }
 
-        Consulta consulta = new Consulta(null,medico,paciente,datos.fecha());
+        Consulta consulta = new Consulta(medico,paciente,datos.fecha());
         consultaRepository.save(consulta);
 
         return new DatosDetalleConsulta(consulta);
@@ -59,4 +64,16 @@ public class AgendaConsultaService {
         }
         return medicoRepository.selecionarMedicoConEspecialidadMasFecha(datos.especialidad(),datos.fecha());
     }
+
+    public void cancelar(DatosCancelamientoConsulta datos) {
+        if (!consultaRepository.existsById(datos.idConsulta())) {
+            throw new ValidacionDeIntegridad("Id de la consulta informado no existe!");
+        }
+
+        validadoresCancelamiento.forEach(v -> v.validar(datos));
+
+        var consulta = consultaRepository.getReferenceById(datos.idConsulta());
+        consulta.cancelar(datos.motivo());
+    }
+
 }
