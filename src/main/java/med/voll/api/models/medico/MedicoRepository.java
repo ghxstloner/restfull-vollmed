@@ -6,16 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public interface MedicoRepository extends JpaRepository<Medico,Long> {
 
     Page<Medico> findByActivoTrue(Pageable paginacion);
 
     @Query("""
-    select m from Medico m 
-    where m.activo = true 
-    and m.especialidad = :especialidad 
+    select m from Medico m\s
+    where m.activo = true\s
+    and m.especialidad = :especialidad\s
     and m.id not in (
         select c.medico.id from Consulta c
         where c.fecha = :fecha
